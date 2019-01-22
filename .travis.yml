@@ -1,0 +1,25 @@
+sudo: required
+servives:
+  - docker
+
+
+before_install:
+  - docker build -t mlgthemoja/finapp-test -f ./client/Dockerfile.dev ./client
+
+
+script:
+  - docker run mlgthemoja/finapp-test npm test -- --coverage
+
+after_success:
+  - docker build -t mlgthemoja/multi-client ./client
+  - docker build -t mlgthemoja/multi-nginx ./nginx
+  - docker build -t mlgthemoja/multi-server ./server
+  - docker build -t mlgthemoja/multi-worker ./worker
+
+  # Log in to the docker cli aka hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # take the built images and push them to docker hub
+  - docker push mlgthemoja/multi-nginx
+  - docker push mlgthemoja/multi-client
+  - docker push mlgthemoja/multi-server
+  - docker push mlgthemoja/multi-worker
