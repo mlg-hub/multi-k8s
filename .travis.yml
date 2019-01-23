@@ -23,3 +23,14 @@ after_success:
   - docker push mlgthemoja/finapp-client
   - docker push mlgthemoja/finapp-server
   - docker push mlgthemoja/finapp-worker
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-2
+  app: finapp-multidocker
+  env: FinappMultidocker-env
+  bucket_name: elasticbeanstalk-us-east-2-341448331141
+  bucket_path: finapp-multidocker
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
