@@ -24,7 +24,7 @@ services:
     - REDIS_HOST=redis
     - REDIS_PORT=6379
     - PGUSER=postgres
-    - PGHOST=192.168.99.100
+    - PGHOST=192.168.99.102
     - PGDATABASE=postgres
     - PGPASSWORD=postgres_password
     - PGPORT=5432

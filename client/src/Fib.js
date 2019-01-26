@@ -35,7 +35,7 @@ class Fib extends Component {
         this.setState({ index: '' });
     };
 
-    renderSeenIndexes() {
+    renderSeenIndexes(){
         return this.state.seenIndexes.map(({ number }) => number).join(', ');
     }
 
@@ -43,11 +43,12 @@ class Fib extends Component {
         const entries = [];
 
         for (let key in this.state.values) {
-            entries.push( <
-                div key = { key } >
+            
+            entries.push( 
+            <div key={key}>
                 For index { key }
-                I calculated { this.state.values[key] } <
-                /div>
+                I calculated { this.state.values[key] } 
+            </div>
             );
         }
 
