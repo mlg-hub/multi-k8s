@@ -1,36 +1,15 @@
 sudo: required
-servives:
+services:
   - docker
-
-
 before_install:
-  - docker build -t mlgthemoja/finapp-test -f ./client/Dockerfile.dev ./client
-
-
-script:
-  - docker run mlgthemoja/finapp-test yarn test -- --coverage
-
-after_success:
-  - docker build -t mlgthemoja/finapp-client ./client
-  - docker build -t mlgthemoja/finapp-nginx ./nginx
-  - docker build -t mlgthemoja/finapp-server ./server
-  - docker build -t mlgthemoja/finapp-worker ./worker
-
-  # Log in to the docker cli aka hub
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  # take the built images and push them to docker hub
-  - docker push mlgthemoja/finapp-nginx
-  - docker push mlgthemoja/finapp-client
-  - docker push mlgthemoja/finapp-server
-  - docker push mlgthemoja/finapp-worker
-deploy:
-  provider: elasticbeanstalk
-  region: us-east-2
-  app: finapp-multidocker
-  env: FinappMultidocker-env
-  bucket_name: elasticbeanstalk-us-east-2-341448331141
-  bucket_path: finapp-multidocker
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  #encrypt the setting to gcloud
+  - openssl aes-256-cbc -K $encrypted_a126deee76a8_key -iv $encrypted_a126deee76a8_iv -in settings.json.enc -out settings.json -d
+  # install the google cloud sdk to the travis ci
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  # make some configuration automatically
+  - soucer $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  # link google sdk to my gmail account
+  # video 231
+  - gcloud auth activate-service-account --key-file service-account.json
+  
