@@ -1,6 +1,10 @@
 sudo: required
 services:
   - docker
+env:
+  global:
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+    - SHA=$(git rev-parse HEAD)
 before_install:
   #encrypt the setting to gcloud
   - openssl aes-256-cbc -K $encrypted_a126deee76a8_key -iv $encrypted_a126deee76a8_iv -in settings.json.enc -out settings.json -d
@@ -11,5 +15,20 @@ before_install:
   - gcloud components update kubectl
   # link google sdk to my gmail account
   # video 231
-  - gcloud auth activate-service-account --key-file service-account.json
-  
+  - gcloud auth activate-service-account --key-file settings.json
+  - gcloud config set project multi-k8s-231902
+  - gcloud config set compute/zone us-central1-a
+  - gcloud container clusters get-credentials multi-k8s
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t mlgthemoja/react-test -f ./client/Dockerfile.dev ./client
+
+  script:
+    - docker run mlgthemoja/react-test npm test -- --coverage
+  deploy:
+  # rather than specify the provider here we will run a 
+  # a script than will tell travis ci how to go about
+  # with the installation of the cluster
+    provider: script
+    script: bash ./deploy.sh
+    on:
+      branch: master
